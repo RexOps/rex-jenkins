@@ -18,6 +18,7 @@ use Rex::Resource::Common;
 
 use Jenkins::folder::Provider::posix;
 use Jenkins::job::Provider::posix;
+use Jenkins::pipeline::Provider::posix;
 eval {
   # For Rex > 1
   use Rex::Commands::Template;
@@ -28,8 +29,8 @@ our ( $user, $group, $jenkins_path ) =
   ( "jenkins", "jenkins", "/var/lib/jenkins" );
 
 task "setup", sub {
-  $user     = param_lookup "user",     "jenkins";
-  $group    = param_lookup "group",    "jenkins";
+  $user         = param_lookup "user",         "jenkins";
+  $group        = param_lookup "group",        "jenkins";
   $jenkins_path = param_lookup "jenkins_path", "/var/lib/jenkins";
 
   file "$jenkins_path/jobs",
@@ -78,6 +79,28 @@ resource "job", sub {
   Rex::Logger::debug("Get Jenkins::job provider: $provider");
 
   return ( $provider, $job_config );
+};
+
+resource "pipeline", sub {
+  my $pipeline_name = resource_name();
+
+  my $pipeline_config = {
+    ensure => param_lookup( "ensure", "present" ),
+    string_parameters => param_lookup( "string_parameters", [] ),
+    choice_parameters => param_lookup( "choice_parameters", [] ),
+    script          => param_lookup( "script", "" ),
+    config_template => param_lookup(
+      "config_template", template("templates/jenkins/pipeline.config.xml")
+    ),
+    name => $pipeline_name,
+  };
+
+  my $provider =
+    param_lookup( "provider", "Jenkins::pipeline::Provider::posix" );
+
+  Rex::Logger::debug("Get Jenkins::pipeline provider: $provider");
+
+  return ( $provider, $pipeline_config );
 };
 
 1;

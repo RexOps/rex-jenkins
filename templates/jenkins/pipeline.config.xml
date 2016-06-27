@@ -1,0 +1,49 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<flow-definition plugin="workflow-job">
+  <actions/>
+  <description></description>
+  <keepDependencies>false</keepDependencies>
+  <properties>
+    <hudson.model.ParametersDefinitionProperty>
+      <parameterDefinitions>
+% my %used_s_k = ();
+% for my $string_param (@{ $string_parameters }) {
+%   next if $used_s_k{$string_param->{name}};
+%   $used_s_k{$string_param->{name}} = 1;
+        <hudson.model.StringParameterDefinition>
+          <name><%= $string_param->{name} %></name>
+          <description><%= $string_param->{description} %></description>
+          <defaultValue><%= $string_param->{value} %></defaultValue>
+        </hudson.model.StringParameterDefinition>
+% }
+% my %used_c_k = ();
+% for my $choice_param (@{ $choice_parameters }) {
+%   next if $used_c_k{$choice_param->{name}};
+%   $used_c_k{$choice_param->{name}} = 1;
+        <hudson.model.ChoiceParameterDefinition>
+          <name><%= $choice_param->{name} %></name>
+          <description><%= $choice_param->{description} %></description>
+          <choices class="java.util.Arrays$ArrayList">
+            <a class="string-array">
+% for my $entry ( @{ $choice_param->{list} } ) {
+              <string><%= $entry %></string>
+% }
+            </a>
+          </choices>
+        </hudson.model.ChoiceParameterDefinition>
+% }
+      </parameterDefinitions>
+    </hudson.model.ParametersDefinitionProperty>
+    <com.sonyericsson.rebuild.RebuildSettings plugin="rebuild">
+      <autoRebuild>false</autoRebuild>
+      <rebuildDisabled>false</rebuildDisabled>
+    </com.sonyericsson.rebuild.RebuildSettings>
+  </properties>
+  <definition class="org.jenkinsci.plugins.workflow.cps.CpsFlowDefinition" plugin="workflow-cps">
+    <script>
+<%= $script %>
+    </script>
+    <sandbox>true</sandbox>
+  </definition>
+  <triggers/>
+</flow-definition>
