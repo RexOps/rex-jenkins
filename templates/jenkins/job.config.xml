@@ -6,14 +6,20 @@
   <properties>
     <hudson.model.ParametersDefinitionProperty>
       <parameterDefinitions>
+% my %used_s_k = ();
 % for my $string_param (@{ $string_parameters }) {
+%   next if $used_s_k{$string_param->{name}};
+%   $used_s_k{$string_param->{name}} = 1;
         <hudson.model.StringParameterDefinition>
           <name><%= $string_param->{name} %></name>
           <description><%= $string_param->{description} %></description>
           <defaultValue><%= $string_param->{value} %></defaultValue>
         </hudson.model.StringParameterDefinition>
 % }
+% my %used_c_k = ();
 % for my $choice_param (@{ $choice_parameters }) {
+%   next if $used_c_k{$choice_param->{name}};
+%   $used_c_k{$choice_param->{name}} = 1;
         <hudson.model.ChoiceParameterDefinition>
           <name><%= $choice_param->{name} %></name>
           <description><%= $choice_param->{description} %></description>
@@ -28,12 +34,12 @@
 % }
       </parameterDefinitions>
     </hudson.model.ParametersDefinitionProperty>
-    <com.sonyericsson.rebuild.RebuildSettings plugin="rebuild@1.25">
+    <com.sonyericsson.rebuild.RebuildSettings plugin="rebuild">
       <autoRebuild>false</autoRebuild>
       <rebuildDisabled>false</rebuildDisabled>
     </com.sonyericsson.rebuild.RebuildSettings>
   </properties>
-  <scm class="hudson.plugins.git.GitSCM" plugin="git@2.5.0">
+  <scm class="hudson.plugins.git.GitSCM" plugin="git">
     <configVersion>2</configVersion>
     <userRemoteConfigs>
       <hudson.plugins.git.UserRemoteConfig>
@@ -61,7 +67,7 @@
     </hudson.tasks.Shell>
   </builders>
   <publishers>
-    <hudson.tasks.junit.JUnitResultArchiver plugin="junit@1.13">
+    <hudson.tasks.junit.JUnitResultArchiver plugin="junit">
       <testResults>junit_output_*.xml</testResults>
       <keepLongStdio>false</keepLongStdio>
       <healthScaleFactor>1.0</healthScaleFactor>
