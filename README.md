@@ -108,3 +108,51 @@ Jenkins::job "Build Tests/root/Ubuntu 14.04",
   build_command    => './run.pl ami-49cb503a';
 ```
 
+### pipeline
+
+Create a pipeline.
+
+#### Parameters
+
+* ensure - Default: present
+* string_parameters, If you need string parameters for your job - Default `[]`
+* choice_parameters, If you need choice parameters for your job - Default `[]`
+* script, Pipeline groovy script.
+* config_template, If you want to use a special folder configuration template - Default: `template("templates/jenkins/pipeline.config.xml")`
+
+
+#### Example
+
+```perl
+Jenkins::pipeline "Build Tests/root",
+  ensure            => "present",
+  string_parameters => [
+  {
+    name        => "REX_REPO",
+    description => "",
+    value       => "https://github.com/RexOps/Rex.git",
+  },
+  {
+    name        => "REX_BRANCH",
+    description => "",
+    value       => "master",
+  },
+  {
+    name        => "BUILD_BRANCH",
+    description => "",
+    value       => "*/master",
+  },
+  ],
+  choice_parameters => [
+  {
+    name        => "rex_feature",
+    description => "",
+    list => [qw/0.42 0.51 0.53 0.54 0.55 0.57 1.0 1.1 1.2 1.3 1.4 1.5/],
+  },
+  ],
+  script   => template("templates/pipeline.config.tpl", {
+    some_special_var => "foo",
+    some_other_var => "bar",
+  }),
+```
+
